@@ -18,11 +18,11 @@ const LocalMap = () => {
     })
       .then((resp) => {
         console.log(resp);
-        return resp.status;
+        return resp.json();
       })
       .then((resp) => {
         console.log(resp);
-        setDate(resp.toString());
+        setDate(resp["time"]);
       });
   }, []);
 
