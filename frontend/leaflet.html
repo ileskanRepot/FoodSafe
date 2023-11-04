@@ -1,25 +1,114 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Leaflet Map Example</title>
     <!-- Link to Leaflet CSS file -->
     <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     />
     <!-- Link to Leaflet JavaScript file -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <style>
-      #map {
-        height: 90vh;
-        width: 90vw;
-        border: 1px solid gray;
-        margin: auto;
-      }
+        #map {
+            height: 90vh;
+            width: 90vw;
+            border: 1px solid gray;
+            margin: auto;
+        }
     </style>
-  </head>
-  <body>
-    <div id="map"></div>
-    <script src="./app.js"></script>
-  </body>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    // Initialize the map
+    let nn = 0.001;
+    var geojsonFeature = {
+        type: "Feature",
+        // properties: {
+        //   name: "Coors Field",
+        //   amenity: "Baseball Stadium",
+        //   popupContent: "This is where the Rockies play!",
+        // },
+        geometry: {
+            type: "Polygon",
+            coordinates: [
+                [
+                    [-0.09 + nn, 51.505 + nn],
+                    [-0.09 + nn, 51.505 - nn],
+                    [-0.09 - nn, 51.505 - nn],
+                    [-0.09 - nn, 51.505 + nn],
+                    [-0.09, 51.505 + 2 * nn],
+                ],
+            ],
+        },
+    };
+
+    var littleton = L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.');
+    var denver = L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.');
+    var aurora = L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.');
+    var golden = L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.');
+
+    var cities = L.layerGroup([littleton, denver, aurora, golden]);
+
+    var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    });
+    var ratsUrl = '..\\backend\\testrats.png',
+        ratBounds = [[3.831, 30.572], [1.892, 32.747]];
+    var ratsUrl2 = '..\\backend\\testrats2.png',
+        ratBounds2 = [[3.831, 33.572], [1.892, 35.747]];
+    rats_layer = L.imageOverlay(ratsUrl, ratBounds);
+    rats_layer2 = L.imageOverlay(ratsUrl2, ratBounds2);
+
+    //   var imageUrl2 = '..\\backend\\2022-02-13.jpeg',
+    //     imageBounds2 = [[6.831, 30.572], [4.892, 32.747]];
+    // jp2_layer2 = L.imageOverlay(imageUrl2, imageBounds2);
+    // var imageUrl3 = 'https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Fef750adb-7bd0-4043-92ac-ad5309010eb6.jp2',
+    //     imageBounds3 = [[9.831, 30.572], [7.892, 32.747]];
+    // jp2_layer3 = L.imageOverlay(imageUrl3, imageBounds3);
+
+
+    var baseMaps = {
+        "OpenStreetMap": osm,
+    };
+
+    var overlayMaps = {
+        "Cities": cities,
+        "Rats": rats_layer,
+    };
+
+    // var map = L.map("map").setView([51.505, -0.09], 15);
+    var map = L.map("map", {layers: [osm, cities, rats_layer, rats_layer2]}).setView([3.831, 30.572], 12);
+
+    // L.tileLayer('..\\backend\\2022-02-13.jpeg').addTo(map);
+
+    var layerControl = L.control.layers(null, overlayMaps).addTo(map);
+
+    console.log(L.geoJSON(geojsonFeature));
+    L.geoJSON(geojsonFeature).addTo(map);
+
+    rats_layer.addTo(map);
+    rats_layer2.addTo(map);
+    // jp2_layer2.addTo(map);
+    // jp2_layer3.addTo(map);
+
+    // Add a circle overlay with a specific radius and color
+    // var circle = L.circle([51.508, -0.11], {
+    //   color: "red",
+    //   radius: 500, // Radius in meters
+    // }).addTo(map);
+
+    // Add a marker with a popup
+    var marker1 = L.marker([51.505, -0.09])
+        .addTo(map)
+        .bindPopup("<b>Hello World!</b><br/> I am a popup.");
+
+    var marker2 = L.marker([0, 0])
+        .addTo(map)
+        .bindPopup("<b>Hello World 2!</b><br/> I am a popup.");
+</script>
+<script src="./app.js"></script>
+</body>
 </html>

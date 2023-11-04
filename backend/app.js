@@ -1,56 +1,46 @@
-let startPos = [3.0, 31.166667];
-// Initialize the map
+let startPos = [1.349508, 32.775744];
 let floodUrl = "https://ows.globalfloods.eu/glofas-ows/ows?";
-// let floodUrl = "http://ows.mundialis.de/services/service?";
-let url = "/dummyGeo.json";
 
-let nn = 0.0027;
-
-// var geojsonFeature = {
-//   type: "Feature",
-//   // properties: {
-//   //   name: "Coors Field",
-//   //   amenity: "Baseball Stadium",
-//   //   popupContent: "This is where the Rockies play!",
-//   // },
-//   geometry: {
-//     type: "Polygon",
-//     coordinates: [
-//       [
-//         [-0.09 + nn, 51.505 + nn],
-//         [-0.09 + nn, 51.505 - nn],
-//         [-0.09 - nn, 51.505 - nn],
-//         [-0.09 - nn, 51.505 + nn],
-//       ],
-//     ],
-//   },
-// };
-
-// var map = L.map("map").setView([51.505, -0.09], 15);
-var title = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+var base_map = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution:
     '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 });
-var map = L.map("map", { layers: [title] }).setView(startPos, 5);
 
-// Add the tile layer (you can choose a different map style by changing the URL)
+var map = L.map("map", { layers: [base_map] }).setView(startPos, 8);
 
-// console.log(L.geoJSON(geojsonFeature));
-// L.geoJSON(geojsonFeature).addTo(map);
-
-// Add a circle overlay with a specific radius and color
-// var circle = L.circle([51.508, -0.11], {
-//   color: "red",
-//   radius: 500, // Radius in meters
-// }).addTo(map);
-var wmsLayer = L.tileLayer.wms(floodUrl, {
+// Floods
+var floodsWmsLayer = L.tileLayer.wms(floodUrl, {
   transparent: true,
   format: "image/png",
   layers: "FloodSummary1_30",
 });
 
-var legend = L.control({ position: "bottomleft" });
+// Rats
+var ratsUrl = '.\\map_data\\rats\\rats_2022-02-11_-_2022-02-13.png',
+    ratBounds = [[3.831, 30.572], [1.892, 32.747]];
+ratsLayer = L.imageOverlay(ratsUrl, ratBounds);
+var ratsUrl2 = '.\\map_data\\rats\\rats_2022-04-12_-_2022-04-14.png',
+ratsLayer2 = L.imageOverlay(ratsUrl2, ratBounds);
+var ratsUrl3 = '.\\map_data\\rats\\rats_2022-05-12_-_2022-05-14.png',
+ratsLayer3 = L.imageOverlay(ratsUrl3, ratBounds);
 
+// Layer groups
+// TODO: Humidity
+var day = L.layerGroup([ratsLayer]);
+var day2 = L.layerGroup([ratsLayer2]);
+var day3 = L.layerGroup([ratsLayer3]);
+
+// Layers
+let overlays = {
+  "Floods": floodsWmsLayer,
+  // TODO: Toggle layer control
+  "Rats": day.getLayers()[0],
+};
+
+let layerControl = L.control.layers(null, overlays).addTo(map);
+
+// Legend
+var legend = L.control({ position: "bottomleft" });
 legend.onAdd = function (map) {
   var div = L.DomUtil.create("div", "legend");
   div.style.backgroundColor = "#ff00ff50";
@@ -64,32 +54,43 @@ legend.onAdd = function (map) {
 };
 legend.addTo(map);
 
-// Add a marker with a popup
-var marker1 = L.marker(startPos)
-  .bindPopup("<b>Hello World!</b><br/> I am a popup.")
-  .addTo(map);
-
-let overlayers = {
-  // "Marker": marker1,
-  // Legend: legend,
-  FloodLayer: wmsLayer,
-  // Title: title,
-};
-
-let layercontrol = L.control.layers(null, overlayers).addTo(map);
-
-// let layerToggle = true;
-// const removeLayer = () => {
-//   if (layerToggle) {
-//     map.removeLayer(wmsLayer);
-//     layerToggle = false;
-//   } else {
-//     map.addLayer(wmsLayer);
-//     layerToggle = true;
-//   }
-// };
-
+// Calendar
 document.getElementById("dayPicker").onchange = (evt) => {
   console.log(evt.type);
   console.log(document.getElementById("dayPicker").valueAsDate);
 };
+
+// TODO: Humidity
+let url = ".\\map_data\\humidity_features_version2.geojson";
+fetch(url)
+  .then((resp) => {
+    return resp.json();
+  })
+  .then((resp) => {
+    console.log(resp);
+    L.geoJSON(resp,
+    {style: function (feature) {
+      return {color: feature.properties.color};
+    }
+
+    }).addTo(map);
+  });
+
+// let geo = L.geoJSON(data, {
+//     style: function (feature) {
+//         return {color: feature.properties.color};
+//     }
+// }).bindPopup(function (layer) {
+//     return layer.feature.properties.description;
+// }).addTo(map);
+
+// let layerToggle = true;
+// const removeLayer = () => {
+//   if (layerToggle) {
+//     map.removeLayer(floodsWmsLayer);
+//     layerToggle = false;
+//   } else {
+//     map.addLayer(floodsWmsLayer);
+//     layerToggle = true;
+//   }
+// };
