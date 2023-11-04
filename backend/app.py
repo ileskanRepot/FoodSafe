@@ -1,9 +1,7 @@
 from time import time
-from flask import Flask,jsonify
-from flask_cors import CORS, cross_origin
+from flask import Flask,jsonify,send_file
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173","http://localhost:5000"])
 # app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/')
@@ -13,3 +11,13 @@ def hello():
 @app.route('/localMap')
 def localMap():
     return {"time":round(time())}
+
+@app.route('/worldMap.json')
+def worldMap():
+    # return send_file("./test.geojson")
+    return send_file("./worldMap.json")
+
+@app.route('/dummyGeo.json')
+def dummyGeo():
+    return send_file("./Dummy_data.geojson")
+    # return send_file("./worldMap.json")
