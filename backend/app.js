@@ -1,10 +1,8 @@
 // Initialize the map
-let url = "http://localhost:5000/dummyGeo.json";
+let url = "/dummyGeo.json";
 
 let nn = 0.0027;
-fetch(url).then((resp) => {
-  console.log(resp);
-});
+
 // var geojsonFeature = {
 //   type: "Feature",
 //   // properties: {
@@ -26,7 +24,7 @@ fetch(url).then((resp) => {
 // };
 
 // var map = L.map("map").setView([51.505, -0.09], 15);
-var map = L.map("map").setView([51.505, -0.09], 17);
+var map = L.map("map").setView([51.505, -0.09], 13);
 
 // Add the tile layer (you can choose a different map style by changing the URL)
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -34,8 +32,8 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
 
-console.log(L.geoJSON(geojsonFeature));
-L.geoJSON(geojsonFeature).addTo(map);
+// console.log(L.geoJSON(geojsonFeature));
+// L.geoJSON(geojsonFeature).addTo(map);
 
 // Add a circle overlay with a specific radius and color
 // var circle = L.circle([51.508, -0.11], {
@@ -51,3 +49,12 @@ var marker1 = L.marker([51.505, -0.09])
 var marker2 = L.marker([0, 0])
   .addTo(map)
   .bindPopup("<b>Hello World 2!</b><br/> I am a popup.");
+
+fetch(url)
+  .then((resp) => {
+    return resp.json();
+  })
+  .then((resp) => {
+    console.log(resp);
+    L.geoJSON(resp).addTo(map);
+  });
