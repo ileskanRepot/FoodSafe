@@ -15,10 +15,10 @@ import {
 
 function App() {
   const router = createBrowserRouter([
-    { element: <Layout /> },
+    // { element: <Layout /> },
     {
       path: "/",
-      element: <Layout />,
+      // element: <Layout />,
       children: [
         { path: "", element: <Home /> },
         { path: "localMap", element: <LocalMap /> },
