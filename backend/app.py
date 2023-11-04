@@ -30,3 +30,18 @@ def dummyGeo():
 def vuln():
     return send_file("./vuln.csv")
     # return send_file("./worldMap.json")
+
+@app.route('/rat1.png')
+def rat1():
+    return send_file("./vuln.csv")
+    # return send_file("./worldMap.json")
+
+@app.route('/rat2.png')
+def rat2():
+    return send_file("./vuln.csv")
+    # return send_file("./worldMap.json")
+
+@app.route('/rat3.png')
+def rat3():
+    return send_file("./vuln.csv")
+    # return send_file("./worldMap.json")
