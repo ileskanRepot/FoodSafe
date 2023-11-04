@@ -46,10 +46,6 @@ var marker1 = L.marker([51.505, -0.09])
   .addTo(map)
   .bindPopup("<b>Hello World!</b><br/> I am a popup.");
 
-var marker2 = L.marker([0, 0])
-  .addTo(map)
-  .bindPopup("<b>Hello World 2!</b><br/> I am a popup.");
-
 fetch(url)
   .then((resp) => {
     return resp.json();
