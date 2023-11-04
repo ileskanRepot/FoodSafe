@@ -27,13 +27,13 @@ let nn = 0.0027;
 // };
 
 // var map = L.map("map").setView([51.505, -0.09], 15);
-var map = L.map("map").setView(startPos, 5);
-
-// Add the tile layer (you can choose a different map style by changing the URL)
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+var title = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution:
     '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-}).addTo(map);
+});
+var map = L.map("map", { layers: [title] }).setView(startPos, 5);
+
+// Add the tile layer (you can choose a different map style by changing the URL)
 
 // console.log(L.geoJSON(geojsonFeature));
 // L.geoJSON(geojsonFeature).addTo(map);
@@ -43,13 +43,11 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 //   color: "red",
 //   radius: 500, // Radius in meters
 // }).addTo(map);
-var wmsLayer = L.tileLayer
-  .wms(floodUrl, {
-    transparent: true,
-    format: "image/png",
-    layers: "FloodSummary1_30",
-  })
-  .addTo(map);
+var wmsLayer = L.tileLayer.wms(floodUrl, {
+  transparent: true,
+  format: "image/png",
+  layers: "FloodSummary1_30",
+});
 
 var legend = L.control({ position: "bottomleft" });
 
@@ -60,35 +58,38 @@ legend.onAdd = function (map) {
   div.style.flexDirection = "column";
   div.style.padding = "5%";
   div.innerHTML += "<h4>INFORMATION</h4>";
-  div.innerHTML += '<button onclick="removeLayer()">TOGGLE FLOODS</button>';
+  div.innerHTML += "<p>More info</p>";
 
   return div;
 };
-
 legend.addTo(map);
 
 // Add a marker with a popup
 var marker1 = L.marker(startPos)
-  .addTo(map)
-  .bindPopup("<b>Hello World!</b><br/> I am a popup.");
+  .bindPopup("<b>Hello World!</b><br/> I am a popup.")
+  .addTo(map);
 
-let layerToggle = true;
-const removeLayer = () => {
-  if (layerToggle) {
-    map.removeLayer(wmsLayer);
-    layerToggle = false;
-  } else {
-    map.addLayer(wmsLayer);
-    layerToggle = true;
-  }
+let overlayers = {
+  // "Marker": marker1,
+  // Legend: legend,
+  FloodLayer: wmsLayer,
+  // Title: title,
 };
 
-// console.log(map.setView());
-// fetch(url)
-//   .then((resp) => {
-//     return resp.json();
-//   })
-//   .then((resp) => {
-//     console.log(resp);
-//     L.geoJSON(resp).addTo(map);
-//   });
+let layercontrol = L.control.layers(null, overlayers).addTo(map);
+
+// let layerToggle = true;
+// const removeLayer = () => {
+//   if (layerToggle) {
+//     map.removeLayer(wmsLayer);
+//     layerToggle = false;
+//   } else {
+//     map.addLayer(wmsLayer);
+//     layerToggle = true;
+//   }
+// };
+
+document.getElementById("dayPicker").onchange = (evt) => {
+  console.log(evt.type);
+  console.log(document.getElementById("dayPicker").valueAsDate);
+};
