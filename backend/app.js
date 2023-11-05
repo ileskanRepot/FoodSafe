@@ -117,7 +117,6 @@ all = async function () {
   let overlays = {
     Rats: day.getLayers()[0],
     Floods: floodsWmsLayer,
-    // TODO: Toggle layer control
     Humidity: humidity,
   };
 
@@ -145,32 +144,39 @@ all = async function () {
   legend.addTo(map);
   // console.log(getGradientColor(startColor, endColor, 4 / 10));
 
+  let curDay = day.getLayers()[0];
   // Calendar
-  document.getElementById("dayPicker").onchange = (evt) => {
-    console.log(evt.type);
-    console.log(document.getElementById("dayPicker").valueAsDate);
+  let datePicker = document.getElementById("dayPicker");
+  datePicker.onchange = (evt) => {
+    if (datePicker.valueAsDate.getDate() == 7) {
+      map.removeLayer(curDay);
+      overlays.Rats = day.getLayers()[0];
+
+      layerControl.addOverlay(day.getLayers()[0], "Rats");
+      day.getLayers()[0].addTo(map);
+
+      layerControl.removeLayer(curDay);
+      curDay = day.getLayers()[0];
+    } else if (datePicker.valueAsDate.getDate() == 18) {
+      map.removeLayer(curDay);
+      overlays.Rats = day2.getLayers()[0];
+
+      layerControl.addOverlay(day2.getLayers()[0], "Rats");
+      day2.getLayers()[0].addTo(map);
+
+      layerControl.removeLayer(curDay);
+      curDay = day2.getLayers()[0];
+    } else if (datePicker.valueAsDate.getDate() == 29) {
+      map.removeLayer(curDay);
+      overlays.Rats = day3.getLayers()[0];
+
+      layerControl.addOverlay(day3.getLayers()[0], "Rats");
+      day3.getLayers()[0].addTo(map);
+
+      layerControl.removeLayer(curDay);
+      curDay = day3.getLayers()[0];
+    }
   };
-
-  // Utility
-
-  // let geo = L.geoJSON(data, {
-  //     style: function (feature) {
-  //         return {color: feature.properties.color};
-  //     }
-  // }).bindPopup(function (layer) {
-  //     return layer.feature.properties.description;
-  // }).addTo(map);
-
-  // let layerToggle = true;
-  // const removeLayer = () => {
-  //   if (layerToggle) {
-  //     map.removeLayer(floodsWmsLayer);
-  //     layerToggle = false;
-  //   } else {
-  //     map.addLayer(floodsWmsLayer);
-  //     layerToggle = true;
-  //   }
-  // };
 };
 
 all();
