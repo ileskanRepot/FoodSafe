@@ -4,6 +4,7 @@
     nativeBuildInputs = let
       env = pyPkgs : with pyPkgs; [
         # autopep8
+        cdsapi
         flask
         # flask-cors
       ];

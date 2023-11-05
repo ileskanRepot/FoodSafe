@@ -1,24 +1,29 @@
 // Initialize the map
+let url = "http://localhost:5000/dummyGeo.json";
+
 let nn = 0.0027;
-var geojsonFeature = {
-  type: "Feature",
-  // properties: {
-  //   name: "Coors Field",
-  //   amenity: "Baseball Stadium",
-  //   popupContent: "This is where the Rockies play!",
-  // },
-  geometry: {
-    type: "Polygon",
-    coordinates: [
-      [
-        [-0.09 + nn, 51.505 + nn],
-        [-0.09 + nn, 51.505 - nn],
-        [-0.09 - nn, 51.505 - nn],
-        [-0.09 - nn, 51.505 + nn],
-      ],
-    ],
-  },
-};
+fetch(url).then((resp) => {
+  console.log(resp);
+});
+// var geojsonFeature = {
+//   type: "Feature",
+//   // properties: {
+//   //   name: "Coors Field",
+//   //   amenity: "Baseball Stadium",
+//   //   popupContent: "This is where the Rockies play!",
+//   // },
+//   geometry: {
+//     type: "Polygon",
+//     coordinates: [
+//       [
+//         [-0.09 + nn, 51.505 + nn],
+//         [-0.09 + nn, 51.505 - nn],
+//         [-0.09 - nn, 51.505 - nn],
+//         [-0.09 - nn, 51.505 + nn],
+//       ],
+//     ],
+//   },
+// };
 
 // var map = L.map("map").setView([51.505, -0.09], 15);
 var map = L.map("map").setView([51.505, -0.09], 17);

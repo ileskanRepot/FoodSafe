@@ -2,9 +2,9 @@ let startColor = "#11d6ea";
 let endColor = "#114dec";
 
 var homeIcon = L.icon({
-    iconUrl: './home.png',
-    iconSize:     [32, 32], // size of the icon
-    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+  iconUrl: "./home.png",
+  iconSize: [32, 32], // size of the icon
+  iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
 });
 
 let startPos = [2.8615, 31.5595];
@@ -51,6 +51,20 @@ getGradientColor = function (start_color, end_color, percent) {
   return "#" + diff_red + diff_green + diff_blue;
 };
 
+getGeojson = async function (curUrl) {
+  return fetch(curUrl)
+    .then((resp) => {
+      return resp.json();
+    })
+    .then((resp) => {
+      return L.geoJSON(resp, {
+        style: {
+          color: "red",
+        },
+      });
+    });
+};
+
 getHumidity = async function (curUrl) {
   return fetch(curUrl)
     .then((resp) => {
@@ -79,20 +93,26 @@ getStorage = async function (curUrl, map) {
     })
     .then((resp) => {
       return L.geoJSON(resp, {
-          pointToLayer: function (feature, latlng) {
-            return L.marker(latlng, {icon: homeIcon});
-          },
-          onEachFeature: function (feature, layer) {
-            layer.bindPopup('<h2>'+feature.properties.name+'</h2><p style="font-size:14px;">'+feature.properties.Descr+'</p>');
-            layer.on({
-                click: function(e) {
-                  map.setView(e.latlng, 13);
-                }
-            });
-            layer.getPopup().on('remove', function() {
-              map.setZoom(10);
-            })
-          }
+        pointToLayer: function (feature, latlng) {
+          return L.marker(latlng, { icon: homeIcon });
+        },
+        onEachFeature: function (feature, layer) {
+          layer.bindPopup(
+            "<h2>" +
+              feature.properties.name +
+              '</h2><p style="font-size:14px;">' +
+              feature.properties.Descr +
+              "</p>"
+          );
+          layer.on({
+            click: function (e) {
+              map.setView(e.latlng, 13);
+            },
+          });
+          layer.getPopup().on("remove", function () {
+            map.setZoom(10);
+          });
+        },
       });
     });
 };
@@ -120,11 +140,21 @@ all = async function () {
       [1.892, 32.747],
     ];
   ratsLayer = L.imageOverlay(ratsUrl, ratBounds /*{ zIndex: 999 }*/);
+  // var ratsUrl2 = "./rat2.png",
+  //   ratsLayer2 = L.imageOverlay(ratsUrl2, ratBounds);
+  // var ratsUrl3 = "./rat3.png",
+  //   ratsLayer3 = L.imageOverlay(ratsUrl3, ratBounds);
+
+  // var ratsUrl = "./rat1.json",
+  //   ratBounds = [
+  //     [3.831, 30.572],
+  //     [1.892, 32.747],
+  //   ];
+  // ratsLayer = await getGeojson(ratsUrl);
   var ratsUrl2 = "./rat2.png",
     ratsLayer2 = L.imageOverlay(ratsUrl2, ratBounds);
   var ratsUrl3 = "./rat3.png",
     ratsLayer3 = L.imageOverlay(ratsUrl3, ratBounds);
-
   // Layer groups
   // TODO: Humidity
   var day = L.layerGroup([ratsLayer]);
@@ -148,7 +178,6 @@ all = async function () {
   let storageUrl = "./storage.json";
   let storage = await this.getStorage(storageUrl, map);
   map.addLayer(storage);
-
 
   // Layers
   let overlays = {

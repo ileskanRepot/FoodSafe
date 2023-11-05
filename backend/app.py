@@ -47,7 +47,4 @@ def house():
 @app.route('/humidity.json')
 def humidity():
     return send_file("./map_data/humidity/humidity_features_version2.geojson")
-
-@app.route('/storage.json')
-def storage():
-    return send_file("./map_data/storage/storage_added_description.geojson")
+    # return send_file("./worldMap.json")
