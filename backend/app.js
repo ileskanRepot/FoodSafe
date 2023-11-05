@@ -189,21 +189,24 @@ all = async function () {
   let layerControl = L.control.layers(null, overlays).addTo(map);
 
   // Legend
-  var legend = L.control({ position: "bottomleft" });
+  var legend = L.control({ position: "bottomright" });
   legend.onAdd = function (map) {
     var div = L.DomUtil.create("div", "legend");
-    div.style.backgroundColor = "#ff00ff50";
+    div.style.backgroundColor = "#d9d9d9a0";
     div.style.display = "flex";
     div.style.flexDirection = "column";
-    div.style.padding = "5%";
-    div.innerHTML += "<h4>INFORMATION</h4>";
-    for (let ii = 0; ii < 11; ii++) {
-      div.innerHTML += `<div style="background-color:${getGradientColor(
-        startColor,
-        endColor,
-        ii / 10
-      )};">${ii * 3 + 70}</div>`;
-    }
+    div.style.paddingLeft = "12%";
+    div.style.paddingRight = "12%";
+    div.style.textAlign = "center";
+    // div.style.padding = "10%";
+    div.style.width = "100px";
+    div.innerHTML += "<h2>LEGEND</h2>";
+    div.innerHTML +=
+      '<b style="margin:4%;padding:10%;color:white;background-color:#c31f22;">Rodent alert</b>';
+    div.innerHTML +=
+      '<b style="margin:4%;padding:10%;color:black;background-color:#6ae0e9;">Mould alert</b>';
+    div.innerHTML +=
+      '<b style=";margin:4% 4% 15% 4%;padding:10%;color:white;background-color:#3338ff;">Flood alert</b>';
 
     return div;
   };
