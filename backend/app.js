@@ -1,7 +1,14 @@
 let startColor = "#11d6ea";
 let endColor = "#114dec";
 
-let startPos = [2.8615, 31.6595];
+var homeIcon = L.icon({
+    iconUrl: './home.png',
+    iconSize:     [32, 32], // size of the icon
+    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+});
+
+let startPos = [2.8615, 31.5595];
+let startZoom = 9;
 let floodUrl = "https://ows.globalfloods.eu/glofas-ows/ows?";
 
 getGradientColor = function (start_color, end_color, percent) {
@@ -65,6 +72,31 @@ getHumidity = async function (curUrl) {
     });
 };
 
+getStorage = async function (curUrl, map) {
+  return fetch(curUrl)
+    .then((resp) => {
+      return resp.json();
+    })
+    .then((resp) => {
+      return L.geoJSON(resp, {
+          pointToLayer: function (feature, latlng) {
+            return L.marker(latlng, {icon: homeIcon});
+          },
+          onEachFeature: function (feature, layer) {
+            layer.bindPopup('<h2>'+feature.properties.name+'</h2><p style="font-size:14px;">'+feature.properties.Descr+'</p>');
+            layer.on({
+                click: function(e) {
+                  map.setView(e.latlng, 13);
+                }
+            });
+            layer.getPopup().on('remove', function() {
+              map.setZoom(10);
+            })
+          }
+      });
+    });
+};
+
 all = async function () {
   var base_map = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -102,7 +134,7 @@ all = async function () {
   // Basemap
   var map = L.map("map", {
     layers: [base_map, floodsWmsLayer, day],
-  }).setView(startPos, 8);
+  }).setView(startPos, startZoom);
 
   map.createPane("bottomPane");
   map.getPane("bottomPane").style.zIndex = 300;
@@ -110,8 +142,13 @@ all = async function () {
   // Humidity
   let humidityUrl = "./humidity.json";
   let humidity = await this.getHumidity(humidityUrl);
-
   map.addLayer(humidity);
+
+  // Storage
+  let storageUrl = "./storage.json";
+  let storage = await this.getStorage(storageUrl, map);
+  map.addLayer(storage);
+
 
   // Layers
   let overlays = {

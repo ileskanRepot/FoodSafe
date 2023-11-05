@@ -11,10 +11,10 @@ def nc_to_raster(filename):
     print(day1)
     print(day2)
     print(day3)
-    day1.rio.to_raster('C:\\Users\\Britta\\foodsafe\\FoodSafe\\backend\\map_data\\humidity\\2022-02-12.tif')
-    day2.rio.to_raster('C:\\Users\\Britta\\foodsafe\\FoodSafe\\backend\\map_data\\humidity\\2022-04-13.tif')
-    day3.rio.to_raster('C:\\Users\\Britta\\foodsafe\\FoodSafe\\backend\\map_data\\humidity\\2022-05-13.tif')
+    day1.rio.to_raster('.\\full_2022-02-12.tif')
+    day2.rio.to_raster('.\\full_2022-04-13.tif')
+    day3.rio.to_raster('.\\full_2022-05-13.tif')
 
 
 if __name__ == "__main__":
-    nc_to_raster("uganda_humidity_2022.nc")
+    nc_to_raster("uganda_full_humidity_2022.nc")

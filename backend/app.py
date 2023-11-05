@@ -18,35 +18,36 @@ def localMap():
 
 @app.route('/worldMap.json')
 def worldMap():
-    # return send_file("./test.geojson")
     return send_file("./worldMap.json")
 
 @app.route('/dummyGeo.json')
 def dummyGeo():
     return send_file("./Dummy_data.geojson")
-    # return send_file("./worldMap.json")
 
 @app.route('/vuln.csv')
 def vuln():
     return send_file("./vuln.csv")
-    # return send_file("./worldMap.json")
 
 @app.route('/rat1.png')
 def rat1():
     return send_file("./map_data/rats/rats_2022-02-11_-_2022-02-13.png")
-    # return send_file("./worldMap.json")
 
 @app.route('/rat2.png')
 def rat2():
     return send_file("./map_data/rats/rats_2022-04-12_-_2022-04-14.png")
-    # return send_file("./worldMap.json")
 
 @app.route('/rat3.png')
 def rat3():
     return send_file("./map_data/rats/rats_2022-05-12_-_2022-05-14.png")
-    # return send_file("./worldMap.json")
+
+@app.route('/home.png')
+def house():
+    return send_file("./home.png")
 
 @app.route('/humidity.json')
 def humidity():
     return send_file("./map_data/humidity/humidity_features_version2.geojson")
-    # return send_file("./worldMap.json")
+
+@app.route('/storage.json')
+def storage():
+    return send_file("./map_data/storage/storage_added_description.geojson")

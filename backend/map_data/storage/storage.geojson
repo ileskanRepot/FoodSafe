@@ -1,0 +1,6 @@
+{
+"type": "FeatureCollection",
+"name": "storage_houses",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{"geometry": {"coordinates": [30.925861, 3.017165], "type": "Point"}, "properties": {"name": "World Food Programme, Arua Office", "title": "testtestest"}, "type": "Feature"}, {"geometry": {"coordinates": [31.354164, 3.546803], "type": "Point"}, "properties": {"name": "WFP Food Distribution Point"}, "type": "Feature"}, {"geometry": {"coordinates": [31.663389, 3.506568], "type": "Point"}, "properties": {"name": "WFP Palorinya Warehouse"}, "type": "Feature"}, {"geometry": {"coordinates": [31.401768, 3.492192], "type": "Point"}, "properties": {"name": "WFP Warehouse Bidibidi"}, "type": "Feature"}, {"geometry": {"coordinates": [31.361259, 3.523189], "type": "Point"}, "properties": {"name": "WFP Zone2 FDP2"}, "type": "Feature"}], "type": "FeatureCollection"}
