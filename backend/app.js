@@ -4,7 +4,6 @@ let endColor = "#114dec";
 var homeIcon = L.icon({
   iconUrl: "./home.png",
   iconSize: [32, 32], // size of the icon
-  iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
 });
 
 let startPos = [2.8615, 31.5595];
@@ -109,7 +108,7 @@ getStorage = async function (curUrl, map) {
           layer.bindPopup(popupHtml);
           layer.on({
             click: function (e) {
-              map.setView(e.latlng, 13);
+              map.setView([e.latlng.lat + 0.02, e.latlng.lng], 13);
             },
           });
           layer.getPopup().on("remove", function () {
