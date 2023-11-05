@@ -97,13 +97,16 @@ getStorage = async function (curUrl, map) {
           return L.marker(latlng, { icon: homeIcon });
         },
         onEachFeature: function (feature, layer) {
-          layer.bindPopup(
-            "<h2>" +
+          popupHtml = ''
+          if (feature.properties.URL !== '') {
+            popupHtml = "<img src='" + feature.properties.URL + "' width='300'/>"
+          }
+          popupHtml += "<h2>" +
               feature.properties.name +
               '</h2><p style="font-size:14px;">' +
               feature.properties.Descr +
               "</p>"
-          );
+          layer.bindPopup(popupHtml);
           layer.on({
             click: function (e) {
               map.setView(e.latlng, 13);
