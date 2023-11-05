@@ -51,6 +51,7 @@ getHumidity = async function (curUrl) {
     })
     .then((resp) => {
       return L.geoJSON(resp, {
+        pane: "bottomPane",
         style: function (feature) {
           humidity = feature.properties["DN"];
           colour = getGradientColor(startColor, endColor, (humidity - 70) / 30);
@@ -73,9 +74,6 @@ all = async function () {
     }
   );
 
-  // Humidity
-  let humidityUrl = "./humidity.json";
-  let humidity = await this.getHumidity(humidityUrl);
   // Floods
   var floodsWmsLayer = L.tileLayer.wms(floodUrl, {
     transparent: true,
@@ -103,10 +101,19 @@ all = async function () {
 
   // Basemap
   var map = L.map("map", {
-    layers: [base_map, humidity, floodsWmsLayer, day],
+    layers: [base_map, floodsWmsLayer, day],
   }).setView(startPos, 8);
-  // Layers
 
+  map.createPane("bottomPane");
+  map.getPane("bottomPane").style.zIndex = 300;
+
+  // Humidity
+  let humidityUrl = "./humidity.json";
+  let humidity = await this.getHumidity(humidityUrl);
+
+  map.addLayer(humidity);
+
+  // Layers
   let overlays = {
     Rats: day.getLayers()[0],
     Floods: floodsWmsLayer,
