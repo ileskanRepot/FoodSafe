@@ -1,3 +1,9 @@
+let startColor = "#11d6ea";
+let endColor = "#114dec";
+
+let startPos = [2.8615, 31.6595];
+let floodUrl = "https://ows.globalfloods.eu/glofas-ows/ows?";
+
 getGradientColor = function (start_color, end_color, percent) {
   // strip the leading # if it's there
   start_color = start_color.replace(/^\s*#|\s*$/g, "");
@@ -38,119 +44,126 @@ getGradientColor = function (start_color, end_color, percent) {
   return "#" + diff_red + diff_green + diff_blue;
 };
 
-let startPos = [1.349508, 32.775744];
-let floodUrl = "https://ows.globalfloods.eu/glofas-ows/ows?";
-
-var base_map = L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  {
-    attribution:
-      '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  }
-);
-
-var map = L.map("map", { layers: [base_map] }).setView(startPos, 8);
-
-// Floods
-var floodsWmsLayer = L.tileLayer.wms(floodUrl, {
-  transparent: true,
-  format: "image/png",
-  layers: "FloodSummary1_30",
-});
-
-// Rats
-var ratsUrl = "./rat1.png",
-  ratBounds = [
-    [3.831, 30.572],
-    [1.892, 32.747],
-  ];
-ratsLayer = L.imageOverlay(ratsUrl, ratBounds);
-var ratsUrl2 = "./rat2.png",
-  ratsLayer2 = L.imageOverlay(ratsUrl2, ratBounds);
-var ratsUrl3 = "./rat3.png",
-  ratsLayer3 = L.imageOverlay(ratsUrl3, ratBounds);
-
-// Layer groups
-// TODO: Humidity
-var day = L.layerGroup([ratsLayer]);
-var day2 = L.layerGroup([ratsLayer2]);
-var day3 = L.layerGroup([ratsLayer3]);
-
-// Layers
-let overlays = {
-  Floods: floodsWmsLayer,
-  // TODO: Toggle layer control
-  Rats: day.getLayers()[0],
+getHumidity = async function (curUrl) {
+  return fetch(curUrl)
+    .then((resp) => {
+      return resp.json();
+    })
+    .then((resp) => {
+      return L.geoJSON(resp, {
+        style: function (feature) {
+          humidity = feature.properties["DN"];
+          colour = getGradientColor(startColor, endColor, (humidity - 70) / 30);
+          return {
+            color: colour,
+            fillOpacity: 0.6,
+            opacity: 0.6,
+          };
+        },
+      });
+    });
 };
 
-let layerControl = L.control.layers(null, overlays).addTo(map);
+all = async function () {
+  var base_map = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      attribution:
+        '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }
+  );
 
-// Legend
-var legend = L.control({ position: "bottomleft" });
-legend.onAdd = function (map) {
-  var div = L.DomUtil.create("div", "legend");
-  div.style.backgroundColor = "#ff00ff50";
-  div.style.display = "flex";
-  div.style.flexDirection = "column";
-  div.style.padding = "5%";
-  div.innerHTML += "<h4>INFORMATION</h4>";
-  for (let ii = 0; ii < 11; ii++) {
-    div.innerHTML += `<div style="background-color:${getGradientColor(
-      "#11d6ea",
-      "#144dac",
-      ii / 10
-    )};">${ii * 3 + 70}</div>`;
-  }
-
-  return div;
-};
-legend.addTo(map);
-// console.log(getGradientColor("#11d6ea", "#144dac", 4 / 10));
-
-// Calendar
-document.getElementById("dayPicker").onchange = (evt) => {
-  console.log(evt.type);
-  console.log(document.getElementById("dayPicker").valueAsDate);
-};
-
-// TODO: Humidity
-let url = "./humidity.json";
-fetch(url)
-  .then((resp) => {
-    return resp.json();
-  })
-  .then((resp) => {
-    console.log(resp);
-    L.geoJSON(resp, {
-      style: function (feature) {
-        humidity = feature.properties["DN"];
-        colour = getGradientColor("#11d6ea", "#144dac", (humidity - 70) / 30);
-        return {
-          color: colour,
-          fillOpacity: 0.6,
-          opacity: 0.6,
-        };
-      },
-    }).addTo(map);
+  // Humidity
+  let humidityUrl = "./humidity.json";
+  let humidity = await this.getHumidity(humidityUrl);
+  // Floods
+  var floodsWmsLayer = L.tileLayer.wms(floodUrl, {
+    transparent: true,
+    format: "image/png",
+    layers: "FloodHazard100y",
   });
 
-// Utility
+  // Rats
+  var ratsUrl = "./rat1.png",
+    ratBounds = [
+      [3.831, 30.572],
+      [1.892, 32.747],
+    ];
+  ratsLayer = L.imageOverlay(ratsUrl, ratBounds /*{ zIndex: 999 }*/);
+  var ratsUrl2 = "./rat2.png",
+    ratsLayer2 = L.imageOverlay(ratsUrl2, ratBounds);
+  var ratsUrl3 = "./rat3.png",
+    ratsLayer3 = L.imageOverlay(ratsUrl3, ratBounds);
 
-// let geo = L.geoJSON(data, {
-//     style: function (feature) {
-//         return {color: feature.properties.color};
-//     }
-// }).bindPopup(function (layer) {
-//     return layer.feature.properties.description;
-// }).addTo(map);
+  // Layer groups
+  // TODO: Humidity
+  var day = L.layerGroup([ratsLayer]);
+  var day2 = L.layerGroup([ratsLayer2]);
+  var day3 = L.layerGroup([ratsLayer3]);
 
-// let layerToggle = true;
-// const removeLayer = () => {
-//   if (layerToggle) {
-//     map.removeLayer(floodsWmsLayer);
-//     layerToggle = false;
-//   } else {
-//     map.addLayer(floodsWmsLayer);
-//     layerToggle = true;
-//   }
-// };
+  // Basemap
+  var map = L.map("map", {
+    layers: [base_map, humidity, floodsWmsLayer, day],
+  }).setView(startPos, 8);
+  // Layers
+
+  let overlays = {
+    Rats: day.getLayers()[0],
+    Floods: floodsWmsLayer,
+    // TODO: Toggle layer control
+    Humidity: humidity,
+  };
+
+  let layerControl = L.control.layers(null, overlays).addTo(map);
+
+  // Legend
+  var legend = L.control({ position: "bottomleft" });
+  legend.onAdd = function (map) {
+    var div = L.DomUtil.create("div", "legend");
+    div.style.backgroundColor = "#ff00ff50";
+    div.style.display = "flex";
+    div.style.flexDirection = "column";
+    div.style.padding = "5%";
+    div.innerHTML += "<h4>INFORMATION</h4>";
+    for (let ii = 0; ii < 11; ii++) {
+      div.innerHTML += `<div style="background-color:${getGradientColor(
+        startColor,
+        endColor,
+        ii / 10
+      )};">${ii * 3 + 70}</div>`;
+    }
+
+    return div;
+  };
+  legend.addTo(map);
+  // console.log(getGradientColor(startColor, endColor, 4 / 10));
+
+  // Calendar
+  document.getElementById("dayPicker").onchange = (evt) => {
+    console.log(evt.type);
+    console.log(document.getElementById("dayPicker").valueAsDate);
+  };
+
+  // Utility
+
+  // let geo = L.geoJSON(data, {
+  //     style: function (feature) {
+  //         return {color: feature.properties.color};
+  //     }
+  // }).bindPopup(function (layer) {
+  //     return layer.feature.properties.description;
+  // }).addTo(map);
+
+  // let layerToggle = true;
+  // const removeLayer = () => {
+  //   if (layerToggle) {
+  //     map.removeLayer(floodsWmsLayer);
+  //     layerToggle = false;
+  //   } else {
+  //     map.addLayer(floodsWmsLayer);
+  //     layerToggle = true;
+  //   }
+  // };
+};
+
+all();
